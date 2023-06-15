@@ -3,11 +3,13 @@ from rest_framework.views import APIView
 from apps.accounts.serializers import (
     UserSerializers,
     LoginSerializers,
+    UserProfileSerializers,
 )
 from jwt_auth.jwt_custom_token import get_tokens_for_user
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 
 # Create your views here.
@@ -49,3 +51,15 @@ class LoginAPIView(APIView):
             {"tokens": tokens, "message": "Login successfully"},
             status=status.HTTP_200_OK,
         )
+        
+class UserProfileAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        import pdb;pdb.set_trace()
+        print("request.user", request.user)
+        serializer = UserProfileSerializers(request.user)
+        return Response(
+            {'data':serializer.data}, 
+            status=status.HTTP_200_OK,
+            )
