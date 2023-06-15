@@ -11,7 +11,12 @@ class UserSerializers(serializers.ModelSerializer):
 
 class LoginSerializers(serializers.ModelSerializer):
     email = serializers.CharField(max_length=50)
-
     class Meta:
         model = User
         fields = ["email", "password"]
+                
+                
+class UserProfileSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "name", "email", "phone_no"]
