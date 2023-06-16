@@ -5,6 +5,7 @@ from apps.accounts.views import (
     UserProfileAPIView, 
     UserChangePassword,
     UserResetPasswordEmailLink,
+    UserResetPassword,
     )
 
 urlpatterns =[
@@ -17,5 +18,9 @@ urlpatterns =[
         UserResetPasswordEmailLink.as_view(),
         name="email_reset_password_link",
     ),
-    
+    path(
+        "reset-password/<uid>/<token>/",
+        UserResetPassword.as_view(),
+        name="reset_password",
+    ), 
 ]
