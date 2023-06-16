@@ -1,7 +1,10 @@
 from rest_framework import serializers
 from apps.accounts.models import User
 from django.contrib.auth import authenticate
-
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from jwt_auth.utils import Util
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 class UserSerializers(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -56,3 +59,29 @@ class UserChangePasswordSerializer(serializers.Serializer):
         user.save()
         return attrs
         
+class SendPasswordResetLinkEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    
+    class Meta:
+        model = User
+        fields = ["email"]
+    
+    def validate(self, attrs):
+        email = attrs.get("email")
+        print("========= email ===========", email)
+        if User.objects.filter(email=email).exists():
+            user = User.objects.get(email=email)
+            uid = urlsafe_base64_encode(force_bytes(user.id))
+            token = PasswordResetTokenGenerator().make_token(user)
+            reset_link = f"http://127.0.0.1:8000/accounts/reset-password/{uid}/{token}/"
+            try:
+                Util.send_email(
+                    subject="Reset Password",
+                    recipient=email,
+                    message=f"Click here to reset password {reset_link}",
+                )
+            except Exception as e:
+                raise serializers.ValidationError(repr(e))
+            return attrs
+        raise serializers.ValidationError("Sorry, entered email address is wrong")
+            

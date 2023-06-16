@@ -5,6 +5,7 @@ from apps.accounts.serializers import (
     LoginSerializers,
     UserProfileSerializers,
     UserChangePasswordSerializer,
+    SendPasswordResetLinkEmailSerializer,
 )
 from jwt_auth.jwt_custom_token import get_tokens_for_user
 from rest_framework.response import Response
@@ -77,6 +78,25 @@ class UserChangePassword(APIView):
         if serializer.is_valid():
             return Response(
                 {"message": "Password changed successfully"},
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                {"errors": serializer.errors},
+            )
+            
+class UserResetPasswordEmailLink(APIView):
+
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = SendPasswordResetLinkEmailSerializer(data=request.data)
+        if serializer.is_valid():
+            return Response(
+                {
+                    "data": serializer.data,
+                    "message": "Reset password link sent to the email address",
+                },
                 status=status.HTTP_200_OK,
             )
         else:

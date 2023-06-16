@@ -12,7 +12,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import environ
 
+env = environ.Env()
+environ.Env.read_env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -141,3 +144,9 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     }
+
+EMAIL_USER = env.str("EMAIL_USER")
+SENDGRID_API_KEY = env.str("SENDGRID_API_KEY")
+
+# EMAIL_USER = "hardikjethava.kanhasoft@gmail.com"
+# SENDGRID_API_KEY = "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"
